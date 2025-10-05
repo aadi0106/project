@@ -1,0 +1,60 @@
+.template1 {
+  display: flex;
+  font-family: "Poppins", sans-serif;
+  color: #333;
+  background: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 30%;
+  background: linear-gradient(180deg, #0d6efd, #0dcaf0);
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.sidebar h2 {
+  font-size: 18px;
+  border-bottom: 2px solid rgba(255,255,255,0.4);
+  padding-bottom: 5px;
+  margin-top: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  background: rgba(255,255,255,0.2);
+  padding: 5px 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+.sidebar a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.main-content {
+  width: 70%;
+  padding: 25px;
+  background: #fff;
+}
+
+.main-content h2 {
+  color: #0d6efd;
+  margin-top: 15px;
+}
+
+.exp-item, .edu-item {
+  margin-bottom: 15px;
+}
