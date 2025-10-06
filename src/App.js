@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from "react";
 import { useAuth } from "react-oidc-context";
 import FrontPage from "./components/FrontPage";
@@ -12,29 +11,6 @@ function App() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [resumeData, setResumeData] = useState(null);
 
-  // Sign out redirect (Cognito Hosted UI)
-  const signOutRedirect = () => {
-    const clientId = "2sck1ajmt6ogei3edviuar4jks";
-    const logoutUri = "https://master.d1i3gwdqpa0qt6.amplifyapp.com";
-    const cognitoDomain = "https://ap-south-1jzalithv6.auth.ap-south-1.amazoncognito.com";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
-
-  // Handle loading/error states
-  if (auth.isLoading) return <div>Loading authentication...</div>;
-  if (auth.error) return <div>Auth error: {auth.error.message}</div>;
-
-  // If user is not authenticated, show sign-in
-  if (!auth.isAuthenticated) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "100px" }}>
-        <h2>Welcome to Resume Generator</h2>
-        <button onClick={() => auth.signinRedirect()}>Sign in with Cognito</button>
-      </div>
-    );
-  }
-
-  // Main resume app (only visible after login)
   const handleTemplateSelect = (template) => setSelectedTemplate(template);
   const handleFormSubmit = (data) => setResumeData(data);
   const handleBack = () => {
@@ -42,14 +18,33 @@ function App() {
     setSelectedTemplate(null);
   };
 
+  // Sign out function with redirect to login page
+  const signOutRedirect = () => {
+    const clientId = "2sck1ajmt6ogei3edviuar4jks";
+    const logoutUri = window.location.origin; // app root
+    const cognitoDomain = "https://ap-south-1jzalithv6.auth.ap-south-1.amazoncognito.com";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+  };
+
+  // Loading state while checking auth
+  if (auth.isLoading) return <div>Loading...</div>;
+
+  // If not authenticated, show login page
+  if (!auth.isAuthenticated) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <h2>Please Sign In</h2>
+        <button onClick={() => auth.signinRedirect()}>Sign in with Cognito</button>
+      </div>
+    );
+  }
+
+  // Authenticated: show resume builder
   return (
     <div className="app-container">
-      <div className="auth-header" style={{ textAlign: "right", margin: "10px" }}>
-        <span style={{ marginRight: "10px" }}>
-          Hello, <strong>{auth.user?.profile?.email}</strong>
-        </span>
-        <button onClick={() => signOutRedirect()}>Sign out</button>
-      </div>
+      <button className="signout-btn" onClick={signOutRedirect} style={{ float: "right" }}>
+        Sign Out
+      </button>
 
       {!selectedTemplate ? (
         <FrontPage onSelectTemplate={handleTemplateSelect} />
