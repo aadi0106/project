@@ -1,0 +1,138 @@
+.budget-settings {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.budget-settings h2 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+}
+
+.budget-settings .subtitle {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+.budget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.budget-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.budget-item:hover {
+  border-color: #667eea;
+}
+
+.budget-category {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.budget-display {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.budget-amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #667eea;
+  min-width: 120px;
+  text-align: right;
+}
+
+.btn-edit-budget {
+  padding: 8px 20px;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-edit-budget:hover {
+  background: #667eea;
+  color: white;
+}
+
+.budget-edit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.budget-edit input {
+  padding: 10px;
+  border: 2px solid #667eea;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 150px;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-save {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #45a049;
+}
+
+.btn-cancel {
+  background: #f44336;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #da190b;
+}
+
+.budget-info {
+  background: #e3f2fd;
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 4px solid #2196f3;
+}
+
+.budget-info h3 {
+  color: #1976d2;
+  margin-bottom: 15px;
+}
+
+.budget-info ul {
+  list-style-position: inside;
+  color: #555;
+  line-height: 1.8;
+}
+
+.budget-info li {
+  margin-bottom: 8px;
+}

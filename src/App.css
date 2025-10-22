@@ -1,38 +1,133 @@
-.App {
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.App {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.app-header {
+  text-align: center;
   color: white;
+  margin-bottom: 30px;
+  padding: 30px 20px;
+  position: relative;
 }
 
-.App-link {
-  color: #61dafb;
+.app-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.app-header .subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.header-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.signout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.signout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tab {
+  flex: 1;
+  padding: 15px 20px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  background: #f5f5f5;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.main-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
+}
+
+.expenses-section {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 1024px) {
+  .expenses-section {
+    grid-template-columns: 1fr;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 768px) {
+  .app-header h1 {
+    font-size: 2rem;
+  }
+
+  .nav-tabs {
+    flex-direction: column;
+  }
+
+  .main-content {
+    padding: 20px;
   }
 }
