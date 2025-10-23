@@ -5,9 +5,11 @@ import ExpenseList from './components/ExpenseList';
 import Dashboard from './components/Dashboard';
 import BudgetSettings from './components/BudgetSettings';
 import { useAuth } from 'react-oidc-context';
+import { useTheme } from './contexts/ThemeContext';
 
 function App() {
   const auth = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const [expenses, setExpenses] = useState([]);
   const [budgetLimits, setBudgetLimits] = useState({});
@@ -18,11 +20,60 @@ function App() {
   useEffect(() => {
     const savedExpenses = localStorage.getItem('expenses');
     const savedBudgets = localStorage.getItem('budgetLimits');
+    
     if (savedExpenses) {
       setExpenses(JSON.parse(savedExpenses));
+    } else {
+      // Add some sample data if no expenses exist
+      const sampleExpenses = [
+        {
+          id: '1',
+          amount: 45.50,
+          category: 'Food & Dining',
+          date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          note: 'Lunch at restaurant',
+          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: '2',
+          amount: 120.00,
+          category: 'Transportation',
+          date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          note: 'Gas fill-up',
+          timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: '3',
+          amount: 89.99,
+          category: 'Shopping',
+          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          note: 'New shirt',
+          timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: '4',
+          amount: 25.00,
+          category: 'Entertainment',
+          date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          note: 'Movie ticket',
+          timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      setExpenses(sampleExpenses);
     }
+    
     if (savedBudgets) {
       setBudgetLimits(JSON.parse(savedBudgets));
+    } else {
+      // Add some sample budget limits
+      const sampleBudgets = {
+        'Food & Dining': 500,
+        'Transportation': 300,
+        'Shopping': 200,
+        'Entertainment': 150,
+        'Bills & Utilities': 400
+      };
+      setBudgetLimits(sampleBudgets);
     }
   }, []);
 
@@ -61,130 +112,19 @@ function App() {
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
 
-  // Debug authentication state
-  useEffect(() => {
-    console.log('Auth state:', {
-      isLoading: auth.isLoading,
-      isAuthenticated: auth.isAuthenticated,
-      error: auth.error,
-      user: auth.user
-    });
-    
-    // Clear any existing auth errors on mount
-    if (auth.error && auth.error.message.includes('No matching state found')) {
-      console.log('Clearing auth state and retrying...');
-      // Clear localStorage auth data
-      localStorage.removeItem('oidc.user:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_SkR5VDPNC:49n44heamsp64gsnrohap7m3s');
-      localStorage.removeItem('oidc.state:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_SkR5VDPNC:49n44heamsp64gsnrohap7m3s');
-    }
-  }, [auth.isLoading, auth.isAuthenticated, auth.error, auth.user]);
-
   if (auth.isLoading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontSize: '18px',
-        color: '#667eea'
-      }}>
-        🔄 Loading...
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (auth.error) {
-    console.error('Authentication error:', auth.error);
-    return (
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        padding: '20px',
-        textAlign: 'center'
-      }}>
-        <h2 style={{ color: '#e74c3c', marginBottom: '20px' }}>❌ Authentication Error</h2>
-        <p style={{ marginBottom: '20px', color: '#666' }}>
-          {auth.error.message || 'An authentication error occurred'}
-        </p>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={() => window.location.reload()} 
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#667eea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            🔄 Retry
-          </button>
-          <button 
-            onClick={() => auth.signinRedirect()} 
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#27ae60',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            🔑 Sign In Again
-          </button>
-        </div>
-      </div>
-    );
+    return <div>Encountering error... {auth.error.message}</div>;
   }
 
   if (!auth.isAuthenticated) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        textAlign: 'center',
-        padding: '20px'
-      }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
-          💰 Personal Finance Tracker
-        </h1>
-        <p style={{ fontSize: '1.2rem', marginBottom: '40px', opacity: 0.9 }}>
-          Take control of your finances with smart budgeting and expense tracking
-        </p>
-        <button 
-          onClick={() => auth.signinRedirect()} 
-          style={{
-            padding: '15px 30px',
-            fontSize: '1.1rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            color: 'white',
-            border: '2px solid rgba(255, 255, 255, 0.3)',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            backdropFilter: 'blur(10px)',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseOver={(e) => {
-            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-            e.target.style.transform = 'translateY(-2px)';
-          }}
-          onMouseOut={(e) => {
-            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            e.target.style.transform = 'translateY(0)';
-          }}
-        >
-          🔑 Sign In to Continue
-        </button>
+      <div>
+        <button onClick={() => auth.signinRedirect()}>Sign in</button>
+        <button onClick={() => signOutRedirect()}>Sign out</button>
       </div>
     );
   }
@@ -192,62 +132,63 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>Personal Finance Tracker</h1>
-        <p className="subtitle">Welcome back, {auth.user?.profile.email}</p>
         <div className="header-actions">
-          <button className="signout-btn" onClick={() => auth.removeUser()}>
+          <button onClick={toggleTheme} className="theme-toggle-btn">
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
+          <button onClick={() => auth.removeUser()} className="signout-btn">
             Sign Out
           </button>
         </div>
+        <h1>💰 Personal Finance Tracker</h1>
+        <p className="subtitle">Take control of your finances with smart budgeting and expense tracking</p>
+        
+        <nav className="nav-tabs">
+          <button 
+            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            📊 Dashboard
+          </button>
+          <button 
+            className={`tab ${activeTab === 'add-expense' ? 'active' : ''}`}
+            onClick={() => setActiveTab('add-expense')}
+          >
+            ➕ Add Expense
+          </button>
+          <button 
+            className={`tab ${activeTab === 'budget-settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('budget-settings')}
+          >
+            🎯 Budget Settings
+          </button>
+        </nav>
       </header>
-
-      <nav className="nav-tabs">
-        <button 
-          className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          📊 Dashboard
-        </button>
-        <button 
-          className={`tab ${activeTab === 'add-expense' ? 'active' : ''}`}
-          onClick={() => setActiveTab('add-expense')}
-        >
-          ➕ Add Expense
-        </button>
-        <button 
-          className={`tab ${activeTab === 'budget-settings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('budget-settings')}
-        >
-          ⚙️ Budget Settings
-        </button>
-      </nav>
 
       <main className="main-content">
         {activeTab === 'dashboard' && (
           <Dashboard expenses={expenses} budgetLimits={budgetLimits} />
         )}
         {activeTab === 'add-expense' && (
-          <ExpenseForm
-            onAddExpense={addExpense}
-            editingExpense={editingExpense}
-            onUpdateExpense={updateExpense}
-            onCancelEdit={() => setEditingExpense(null)}
-          />
+          <div className="expenses-section">
+            <ExpenseForm
+              onAddExpense={addExpense}
+              onUpdateExpense={updateExpense}
+              editingExpense={editingExpense}
+              onCancelEdit={() => setEditingExpense(null)}
+            />
+            <ExpenseList
+              expenses={expenses}
+              onDeleteExpense={deleteExpense}
+              onEditExpense={setEditingExpense}
+            />
+          </div>
         )}
         {activeTab === 'budget-settings' && (
           <BudgetSettings
             budgetLimits={budgetLimits}
-            onUpdateBudgetLimit={updateBudgetLimit}
+            updateBudgetLimit={updateBudgetLimit}
           />
-        )}
-        {activeTab !== 'dashboard' && (
-          <div className="expenses-section">
-            <ExpenseList
-              expenses={expenses}
-              onEditExpense={(expense) => setEditingExpense(expense)}
-              onDeleteExpense={deleteExpense}
-            />
-          </div>
         )}
       </main>
     </div>
