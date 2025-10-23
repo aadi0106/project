@@ -193,7 +193,7 @@ function App() {
         {activeTab === 'budget-settings' && (
           <BudgetSettings
             budgetLimits={budgetLimits}
-            updateBudgetLimit={updateBudgetLimit}
+            onUpdateBudgetLimit={updateBudgetLimit}
           />
         )}
       </main>

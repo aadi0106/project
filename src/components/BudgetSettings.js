@@ -27,6 +27,8 @@ function BudgetSettings({ budgetLimits, onUpdateBudgetLimit }) {
       onUpdateBudgetLimit(editingCategory, tempLimit);
       setEditingCategory('');
       setTempLimit('');
+    } else {
+      alert('Please enter a valid budget amount greater than 0');
     }
   };
 
@@ -53,6 +55,13 @@ function BudgetSettings({ budgetLimits, onUpdateBudgetLimit }) {
                   min="0"
                   value={tempLimit}
                   onChange={(e) => setTempLimit(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSave();
+                    } else if (e.key === 'Escape') {
+                      handleCancel();
+                    }
+                  }}
                   placeholder="Enter limit"
                   autoFocus
                 />
