@@ -1,70 +1,137 @@
-# Getting Started with Create React App
+# 💰 Personal Finance Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive React application for tracking personal expenses and managing budgets with beautiful charts and analytics.
 
-## Available Scripts
+## ✨ Features
 
-In the project directory, you can run:
+- 📊 **Interactive Dashboard** - Visual overview of your financial data
+- 💸 **Expense Management** - Add, edit, and delete expenses with categories
+- 🎯 **Budget Tracking** - Set and monitor budget limits for different categories
+- 📈 **Analytics & Charts** - Beautiful charts showing spending patterns
+- 🔐 **Secure Authentication** - AWS Cognito integration for user authentication
+- 📱 **Responsive Design** - Works perfectly on desktop, tablet, and mobile
+- 💾 **Local Storage** - Data persists between sessions
 
-### `npm start`
+## 🚀 Getting Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js (v14 or higher)
+- npm or yarn
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone the repository:
+```bash
+git clone https://github.com/aadi0106/project.git
+cd project
+```
 
-### `npm run build`
+2. Install dependencies:
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Start the development server:
+```bash
+npm start
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🛠️ Built With
 
-### `npm run eject`
+- **React** - Frontend framework
+- **Chart.js** - Beautiful charts and graphs
+- **React Chart.js 2** - React wrapper for Chart.js
+- **AWS Cognito** - User authentication
+- **CSS3** - Modern styling with gradients and animations
+- **Local Storage** - Data persistence
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 📱 Screenshots
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The application features:
+- Clean, modern dashboard with financial overview
+- Interactive expense forms with validation
+- Budget management with visual indicators
+- Responsive design for all devices
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🎨 Key Features
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Dashboard
+- Financial overview with key metrics
+- Quick insights and spending analysis
+- Interactive charts showing spending patterns
+- Budget alerts and warnings
 
-## Learn More
+### Expense Management
+- Add expenses with categories and notes
+- Edit existing expenses
+- Delete expenses with confirmation
+- Filter and sort expense history
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Budget Settings
+- Set monthly budget limits for categories
+- Visual budget vs actual spending comparison
+- Budget health indicators
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🔧 Available Scripts
 
-### Code Splitting
+- `npm start` - Runs the app in development mode
+- `npm build` - Builds the app for production
+- `npm test` - Launches the test runner
+- `npm eject` - Ejects from Create React App (one-way operation)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 📊 Categories
 
-### Analyzing the Bundle Size
+The app supports the following expense categories:
+- 🍽️ Food & Dining
+- 🚗 Transportation
+- 🛍️ Shopping
+- 🎬 Entertainment
+- 💡 Bills & Utilities
+- ⚕️ Healthcare
+- 📚 Education
+- ✈️ Travel
+- 📦 Other
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🔐 Authentication
 
-### Making a Progressive Web App
+The app uses AWS Cognito for secure user authentication. Users can:
+- Sign in with their credentials
+- Access their personal expense data
+- Sign out securely
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📱 Responsive Design
 
-### Advanced Configuration
+The application is fully responsive and works on:
+- Desktop computers
+- Tablets
+- Mobile phones
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🤝 Contributing
 
-### Deployment
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📄 License
 
-### `npm run build` fails to minify
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 👨‍💻 Author
+
+**Aadi** - [GitHub Profile](https://github.com/aadi0106)
+
+## 🙏 Acknowledgments
+
+- React team for the amazing framework
+- Chart.js for beautiful charts
+- AWS Cognito for authentication
+- All contributors and users
+
+---
+
+⭐ **Star this repository if you found it helpful!**
