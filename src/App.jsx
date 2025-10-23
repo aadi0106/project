@@ -5,11 +5,11 @@ import ExpenseList from './components/ExpenseList';
 import Dashboard from './components/Dashboard';
 import BudgetSettings from './components/BudgetSettings';
 import { useAuth } from 'react-oidc-context';
-import { useTheme } from './contexts/ThemeContext';
+
 
 function App() {
   const auth = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
+  
 
   const [expenses, setExpenses] = useState([]);
   const [budgetLimits, setBudgetLimits] = useState({});
@@ -107,7 +107,16 @@ function App() {
 
   const signOutRedirect = () => {
     const clientId = "49n44heamsp64gsnrohap7m3s";
-    const logoutUri = "http://localhost:3000";
+    // Get the current origin, handling both local development and Amplify deployment
+    const getLogoutUri = () => {
+      // For Amplify deployment, use the production domain
+      if (window.location.hostname.includes('amplifyapp.com') || window.location.hostname.includes('amazonaws.com')) {
+        return window.location.origin;
+      }
+      // For local development
+      return "http://localhost:3000";
+    };
+    const logoutUri = getLogoutUri();
     const cognitoDomain = "https://ap-south-1skr5vdpnc.auth.ap-south-1.amazoncognito.com";
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
@@ -133,9 +142,6 @@ function App() {
     <div className="App">
       <header className="app-header">
         <div className="header-actions">
-          <button onClick={toggleTheme} className="theme-toggle-btn">
-            {isDarkMode ? '☀️' : '🌙'}
-          </button>
           <button onClick={() => auth.removeUser()} className="signout-btn">
             Sign Out
           </button>
