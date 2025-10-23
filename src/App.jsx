@@ -110,7 +110,8 @@ function App() {
     // Get the current origin, handling both local development and Amplify deployment
     const getLogoutUri = () => {
       // For Amplify deployment, use the production domain
-      if (window.location.hostname.includes('amplifyapp.com') || window.location.hostname.includes('amazonaws.com')) {
+      if (window.location.hostname.includes('amplifyapp.com')) 
+        {
         return window.location.origin;
       }
       // For local development
