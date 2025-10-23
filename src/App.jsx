@@ -61,19 +61,130 @@ function App() {
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
 
+  // Debug authentication state
+  useEffect(() => {
+    console.log('Auth state:', {
+      isLoading: auth.isLoading,
+      isAuthenticated: auth.isAuthenticated,
+      error: auth.error,
+      user: auth.user
+    });
+    
+    // Clear any existing auth errors on mount
+    if (auth.error && auth.error.message.includes('No matching state found')) {
+      console.log('Clearing auth state and retrying...');
+      // Clear localStorage auth data
+      localStorage.removeItem('oidc.user:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_SkR5VDPNC:49n44heamsp64gsnrohap7m3s');
+      localStorage.removeItem('oidc.state:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_SkR5VDPNC:49n44heamsp64gsnrohap7m3s');
+    }
+  }, [auth.isLoading, auth.isAuthenticated, auth.error, auth.user]);
+
   if (auth.isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '18px',
+        color: '#667eea'
+      }}>
+        🔄 Loading...
+      </div>
+    );
   }
 
   if (auth.error) {
-    return <div>Encountering error... {auth.error.message}</div>;
+    console.error('Authentication error:', auth.error);
+    return (
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        padding: '20px',
+        textAlign: 'center'
+      }}>
+        <h2 style={{ color: '#e74c3c', marginBottom: '20px' }}>❌ Authentication Error</h2>
+        <p style={{ marginBottom: '20px', color: '#666' }}>
+          {auth.error.message || 'An authentication error occurred'}
+        </p>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#667eea',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            🔄 Retry
+          </button>
+          <button 
+            onClick={() => auth.signinRedirect()} 
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#27ae60',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            🔑 Sign In Again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!auth.isAuthenticated) {
     return (
-      <div>
-        <button onClick={() => auth.signinRedirect()}>Sign in</button>
-        <button onClick={() => signOutRedirect()}>Sign out</button>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        textAlign: 'center',
+        padding: '20px'
+      }}>
+        <h1 style={{ fontSize: '3rem', marginBottom: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+          💰 Personal Finance Tracker
+        </h1>
+        <p style={{ fontSize: '1.2rem', marginBottom: '40px', opacity: 0.9 }}>
+          Take control of your finances with smart budgeting and expense tracking
+        </p>
+        <button 
+          onClick={() => auth.signinRedirect()} 
+          style={{
+            padding: '15px 30px',
+            fontSize: '1.1rem',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            color: 'white',
+            border: '2px solid rgba(255, 255, 255, 0.3)',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            backdropFilter: 'blur(10px)',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseOver={(e) => {
+            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+            e.target.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => {
+            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            e.target.style.transform = 'translateY(0)';
+          }}
+        >
+          🔑 Sign In to Continue
+        </button>
       </div>
     );
   }
