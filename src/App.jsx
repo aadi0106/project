@@ -13,37 +13,65 @@ function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [editingExpense, setEditingExpense] = useState(null);
 
-  const API_BASE_URL = "https://knsqqj7143.execute-api.ap-south-1.amazonaws.com"; // 🟢 Replace with your actual API URL
+  const API_BASE_URL = "https://knsqqj7143.execute-api.ap-south-1.amazonaws.com"; // 🟢 Your API Gateway URL
 
-  // ✅ Fetch Expenses from API Gateway
+  // ✅ Fetch Expenses from API Gateway (DynamoDB)
   const fetchExpenses = useCallback(async () => {
     try {
       const token = auth.user?.id_token;
-      if (!token) return;
+      if (!token) {
+        console.log("No authentication token available");
+        return;
+      }
 
       const response = await fetch(`${API_BASE_URL}/expenses`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       setExpenses(data);
+      console.log("Expenses fetched successfully:", data);
     } catch (error) {
       console.error("Error fetching expenses:", error);
+      // Set empty array on error to prevent UI issues
+      setExpenses([]);
     }
   }, [auth.user?.id_token]);
 
-  // ✅ Fetch Budget Limits from API Gateway
+  // ✅ Fetch Budget Limits from API Gateway (DynamoDB)
   const fetchBudgets = useCallback(async () => {
     try {
       const token = auth.user?.id_token;
-      if (!token) return;
+      if (!token) {
+        console.log("No authentication token available");
+        return;
+      }
 
       const response = await fetch(`${API_BASE_URL}/budgets`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       setBudgetLimits(data);
+      console.log("Budgets fetched successfully:", data);
     } catch (error) {
       console.error("Error fetching budgets:", error);
+      // Set empty object on error to prevent UI issues
+      setBudgetLimits({});
     }
   }, [auth.user?.id_token]);
 
@@ -55,17 +83,22 @@ function App() {
     }
   }, [auth.isAuthenticated, fetchExpenses, fetchBudgets]);
 
-  // ✅ Add Expense (POST)
+  // ✅ Add Expense (POST to DynamoDB)
   const addExpense = async (expense) => {
     try {
-      const token = auth.user.id_token;
+      const token = auth.user?.id_token;
+      if (!token) {
+        console.error("No authentication token available");
+        return;
+      }
+
       const newExpense = {
         ...expense,
         id: Date.now().toString(),
         timestamp: new Date().toISOString(),
       };
 
-      await fetch(`${API_BASE_URL}/expenses`, {
+      const response = await fetch(`${API_BASE_URL}/expenses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,17 +107,31 @@ function App() {
         body: JSON.stringify(newExpense),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Expense added successfully:", result);
+      
+      // Update local state
       setExpenses([newExpense, ...expenses]);
     } catch (error) {
       console.error("Error adding expense:", error);
+      alert("Failed to add expense. Please try again.");
     }
   };
 
-  // ✅ Update Expense (PUT)
+  // ✅ Update Expense (PUT to DynamoDB)
   const updateExpense = async (updatedExpense) => {
     try {
-      const token = auth.user.id_token;
-      await fetch(`${API_BASE_URL}/expenses/${updatedExpense.id}`, {
+      const token = auth.user?.id_token;
+      if (!token) {
+        console.error("No authentication token available");
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/expenses/${updatedExpense.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -93,37 +140,68 @@ function App() {
         body: JSON.stringify(updatedExpense),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Expense updated successfully:", result);
+
+      // Update local state
       setExpenses(
         expenses.map((exp) => (exp.id === updatedExpense.id ? updatedExpense : exp))
       );
       setEditingExpense(null);
     } catch (error) {
       console.error("Error updating expense:", error);
+      alert("Failed to update expense. Please try again.");
     }
   };
 
-  // ✅ Delete Expense (DELETE)
+  // ✅ Delete Expense (DELETE from DynamoDB)
   const deleteExpense = async (id) => {
     try {
-      const token = auth.user.id_token;
-      await fetch(`${API_BASE_URL}/expenses/${id}`, {
+      const token = auth.user?.id_token;
+      if (!token) {
+        console.error("No authentication token available");
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Expense deleted successfully:", result);
+
+      // Update local state
       setExpenses(expenses.filter((exp) => exp.id !== id));
     } catch (error) {
       console.error("Error deleting expense:", error);
+      alert("Failed to delete expense. Please try again.");
     }
   };
 
-  // ✅ Update Budget Limit (POST)
+  // ✅ Update Budget Limit (POST to DynamoDB)
   const updateBudgetLimit = async (category, limit) => {
     try {
-      const token = auth.user.id_token;
+      const token = auth.user?.id_token;
+      if (!token) {
+        console.error("No authentication token available");
+        return;
+      }
+
       const updatedBudgets = { ...budgetLimits, [category]: parseFloat(limit) };
 
-      await fetch(`${API_BASE_URL}/budgets`, {
+      const response = await fetch(`${API_BASE_URL}/budgets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -132,9 +210,18 @@ function App() {
         body: JSON.stringify(updatedBudgets),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Budget updated successfully:", result);
+
+      // Update local state
       setBudgetLimits(updatedBudgets);
     } catch (error) {
       console.error("Error updating budget:", error);
+      alert("Failed to update budget. Please try again.");
     }
   };
 
