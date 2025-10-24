@@ -20,7 +20,6 @@ function App() {
     try {
       const token = auth.user?.id_token;
       if (!token) {
-        console.log("No authentication token available");
         return;
       }
 
@@ -37,7 +36,6 @@ function App() {
 
       const data = await response.json();
       setExpenses(data);
-      console.log("Expenses fetched successfully:", data);
     } catch (error) {
       console.error("Error fetching expenses:", error);
       // Set empty array on error to prevent UI issues
@@ -50,7 +48,6 @@ function App() {
     try {
       const token = auth.user?.id_token;
       if (!token) {
-        console.log("No authentication token available");
         return;
       }
 
@@ -67,7 +64,6 @@ function App() {
 
       const data = await response.json();
       setBudgetLimits(data);
-      console.log("Budgets fetched successfully:", data);
     } catch (error) {
       console.error("Error fetching budgets:", error);
       // Set empty object on error to prevent UI issues
@@ -111,8 +107,7 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log("Expense added successfully:", result);
+      await response.json();
       
       // Update local state
       setExpenses([newExpense, ...expenses]);
@@ -144,8 +139,7 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log("Expense updated successfully:", result);
+      await response.json();
 
       // Update local state
       setExpenses(
@@ -179,8 +173,7 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log("Expense deleted successfully:", result);
+      await response.json();
 
       // Update local state
       setExpenses(expenses.filter((exp) => exp.id !== id));
@@ -214,8 +207,7 @@ function App() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log("Budget updated successfully:", result);
+      await response.json();
 
       // Update local state
       setBudgetLimits(updatedBudgets);
