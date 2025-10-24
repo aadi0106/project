@@ -1,140 +1,164 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import ExpenseForm from './components/ExpenseForm';
-import ExpenseList from './components/ExpenseList';
-import Dashboard from './components/Dashboard';
-import BudgetSettings from './components/BudgetSettings';
-import { useAuth } from 'react-oidc-context';
-
+import React, { useState, useEffect, useCallback } from "react";
+import "./App.css";
+import ExpenseForm from "./components/ExpenseForm";
+import ExpenseList from "./components/ExpenseList";
+import Dashboard from "./components/Dashboard";
+import BudgetSettings from "./components/BudgetSettings";
+import { useAuth } from "react-oidc-context";
 
 function App() {
   const auth = useAuth();
-  
-
   const [expenses, setExpenses] = useState([]);
   const [budgetLimits, setBudgetLimits] = useState({});
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [editingExpense, setEditingExpense] = useState(null);
 
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedExpenses = localStorage.getItem('expenses');
-    const savedBudgets = localStorage.getItem('budgetLimits');
-    
-    if (savedExpenses) {
-      setExpenses(JSON.parse(savedExpenses));
-    } else {
-      // Add some sample data if no expenses exist
-      const sampleExpenses = [
-        {
-          id: '1',
-          amount: 45.50,
-          category: 'Food & Dining',
-          date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          note: 'Lunch at restaurant',
-          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: '2',
-          amount: 120.00,
-          category: 'Transportation',
-          date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          note: 'Gas fill-up',
-          timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: '3',
-          amount: 89.99,
-          category: 'Shopping',
-          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          note: 'New shirt',
-          timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: '4',
-          amount: 25.00,
-          category: 'Entertainment',
-          date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          note: 'Movie ticket',
-          timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      ];
-      setExpenses(sampleExpenses);
+  const API_BASE_URL = "https://knsqqj7143.execute-api.ap-south-1.amazonaws.com"; // 🟢 Replace with your actual API URL
+
+  // ✅ Fetch Expenses from API Gateway
+  const fetchExpenses = useCallback(async () => {
+    try {
+      const token = auth.user?.id_token;
+      if (!token) return;
+
+      const response = await fetch(`${API_BASE_URL}/expenses`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setExpenses(data);
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
     }
-    
-    if (savedBudgets) {
-      setBudgetLimits(JSON.parse(savedBudgets));
-    } else {
-      // Add some sample budget limits
-      const sampleBudgets = {
-        'Food & Dining': 500,
-        'Transportation': 300,
-        'Shopping': 200,
-        'Entertainment': 150,
-        'Bills & Utilities': 400
+  }, [auth.user?.id_token]);
+
+  // ✅ Fetch Budget Limits from API Gateway
+  const fetchBudgets = useCallback(async () => {
+    try {
+      const token = auth.user?.id_token;
+      if (!token) return;
+
+      const response = await fetch(`${API_BASE_URL}/budgets`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setBudgetLimits(data);
+    } catch (error) {
+      console.error("Error fetching budgets:", error);
+    }
+  }, [auth.user?.id_token]);
+
+  // ✅ Initial Load
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      fetchExpenses();
+      fetchBudgets();
+    }
+  }, [auth.isAuthenticated, fetchExpenses, fetchBudgets]);
+
+  // ✅ Add Expense (POST)
+  const addExpense = async (expense) => {
+    try {
+      const token = auth.user.id_token;
+      const newExpense = {
+        ...expense,
+        id: Date.now().toString(),
+        timestamp: new Date().toISOString(),
       };
-      setBudgetLimits(sampleBudgets);
+
+      await fetch(`${API_BASE_URL}/expenses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newExpense),
+      });
+
+      setExpenses([newExpense, ...expenses]);
+    } catch (error) {
+      console.error("Error adding expense:", error);
     }
-  }, []);
-
-  // Save expenses to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-  }, [expenses]);
-
-  // Save budget limits to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('budgetLimits', JSON.stringify(budgetLimits));
-  }, [budgetLimits]);
-
-  const addExpense = (expense) => {
-    const newExpense = { ...expense, id: Date.now().toString(), timestamp: new Date().toISOString() };
-    setExpenses([newExpense, ...expenses]);
   };
 
-  const updateExpense = (updatedExpense) => {
-    setExpenses(expenses.map(exp => (exp.id === updatedExpense.id ? updatedExpense : exp)));
-    setEditingExpense(null);
+  // ✅ Update Expense (PUT)
+  const updateExpense = async (updatedExpense) => {
+    try {
+      const token = auth.user.id_token;
+      await fetch(`${API_BASE_URL}/expenses/${updatedExpense.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedExpense),
+      });
+
+      setExpenses(
+        expenses.map((exp) => (exp.id === updatedExpense.id ? updatedExpense : exp))
+      );
+      setEditingExpense(null);
+    } catch (error) {
+      console.error("Error updating expense:", error);
+    }
   };
 
-  const deleteExpense = (id) => {
-    setExpenses(expenses.filter(exp => exp.id !== id));
+  // ✅ Delete Expense (DELETE)
+  const deleteExpense = async (id) => {
+    try {
+      const token = auth.user.id_token;
+      await fetch(`${API_BASE_URL}/expenses/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setExpenses(expenses.filter((exp) => exp.id !== id));
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+    }
   };
 
-  const updateBudgetLimit = (category, limit) => {
-    setBudgetLimits({ ...budgetLimits, [category]: parseFloat(limit) });
+  // ✅ Update Budget Limit (POST)
+  const updateBudgetLimit = async (category, limit) => {
+    try {
+      const token = auth.user.id_token;
+      const updatedBudgets = { ...budgetLimits, [category]: parseFloat(limit) };
+
+      await fetch(`${API_BASE_URL}/budgets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedBudgets),
+      });
+
+      setBudgetLimits(updatedBudgets);
+    } catch (error) {
+      console.error("Error updating budget:", error);
+    }
   };
 
+  // ✅ Sign out redirect
   const signOutRedirect = () => {
     const clientId = "49n44heamsp64gsnrohap7m3s";
-    // Get the current origin, handling both local development and Amplify deployment
-    const getLogoutUri = () => {
-      // For Amplify deployment, use the production domain
-      if (window.location.hostname.includes('amplifyapp.com')) 
-        {
-        return window.location.origin;
-      }
-      // For local development
-      return "http://localhost:3000";
-    };
-    const logoutUri = getLogoutUri();
-    const cognitoDomain = "https://ap-south-1skr5vdpnc.auth.ap-south-1.amazoncognito.com";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+    const logoutUri = window.location.origin;
+    const cognitoDomain =
+      "https://ap-south-1skr5vdpnc.auth.ap-south-1.amazoncognito.com";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
+      logoutUri
+    )}`;
   };
 
-  if (auth.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (auth.error) {
-    return <div>Encountering error... {auth.error.message}</div>;
-  }
+  // ✅ Render States
+  if (auth.isLoading) return <div>Loading...</div>;
+  if (auth.error) return <div>Error: {auth.error.message}</div>;
 
   if (!auth.isAuthenticated) {
     return (
-      <div>
+      <div style={{ textAlign: "center", marginTop: "100px" }}>
+        <h2>Welcome to Personal Finance Tracker 💰</h2>
+        <p>Sign in to view your dashboard and manage expenses.</p>
         <button onClick={() => auth.signinRedirect()}>Sign in</button>
-        <button onClick={() => signOutRedirect()}>Sign out</button>
       </div>
     );
   }
@@ -143,29 +167,31 @@ function App() {
     <div className="App">
       <header className="app-header">
         <div className="header-actions">
-          <button onClick={() => auth.removeUser()} className="signout-btn">
+          <button onClick={() => signOutRedirect()} className="signout-btn">
             Sign Out
           </button>
         </div>
         <h1>💰 Personal Finance Tracker</h1>
-        <p className="subtitle">Take control of your finances with smart budgeting and expense tracking</p>
-        
+        <p className="subtitle">
+          Take control of your finances with smart budgeting and analytics
+        </p>
+
         <nav className="nav-tabs">
-          <button 
-            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
+          <button
+            className={`tab ${activeTab === "dashboard" ? "active" : ""}`}
+            onClick={() => setActiveTab("dashboard")}
           >
             📊 Dashboard
           </button>
-          <button 
-            className={`tab ${activeTab === 'add-expense' ? 'active' : ''}`}
-            onClick={() => setActiveTab('add-expense')}
+          <button
+            className={`tab ${activeTab === "add-expense" ? "active" : ""}`}
+            onClick={() => setActiveTab("add-expense")}
           >
             ➕ Add Expense
           </button>
-          <button 
-            className={`tab ${activeTab === 'budget-settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('budget-settings')}
+          <button
+            className={`tab ${activeTab === "budget-settings" ? "active" : ""}`}
+            onClick={() => setActiveTab("budget-settings")}
           >
             🎯 Budget Settings
           </button>
@@ -173,10 +199,10 @@ function App() {
       </header>
 
       <main className="main-content">
-        {activeTab === 'dashboard' && (
+        {activeTab === "dashboard" && (
           <Dashboard expenses={expenses} budgetLimits={budgetLimits} />
         )}
-        {activeTab === 'add-expense' && (
+        {activeTab === "add-expense" && (
           <div className="expenses-section">
             <ExpenseForm
               onAddExpense={addExpense}
@@ -191,7 +217,7 @@ function App() {
             />
           </div>
         )}
-        {activeTab === 'budget-settings' && (
+        {activeTab === "budget-settings" && (
           <BudgetSettings
             budgetLimits={budgetLimits}
             onUpdateBudgetLimit={updateBudgetLimit}
