@@ -6,7 +6,9 @@ import "./index.css";
 
 // Handles redirect URI for local vs Amplify deployment
 const getRedirectUri = () => {
-  if (window.location.hostname.includes("amplifyapp.com")) {
+  if (window.location.hostname.includes("amplifyapp.com") || 
+      window.location.hostname.includes("amazonaws.com") ||
+      window.location.hostname.includes("cloudfront.net")) {
     return window.location.origin;
   }
   return "http://localhost:3000";
@@ -18,7 +20,10 @@ const cognitoAuthConfig = {
   client_id: "49n44heamsp64gsnrohap7m3s", // Your Cognito App Client ID
   redirect_uri: getRedirectUri(),
   response_type: "code",
-  scope: "openid profile email",
+  scope: "openid email phone", // Fixed scope to match Cognito configuration
+  automaticSilentRenew: true,
+  loadUserInfo: true,
+  post_logout_redirect_uri: getRedirectUri(),
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

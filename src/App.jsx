@@ -237,15 +237,52 @@ function App() {
   };
 
   // ✅ Render States
-  if (auth.isLoading) return <div>Loading...</div>;
-  if (auth.error) return <div>Error: {auth.error.message}</div>;
+  if (auth.isLoading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "100px" }}>
+        <h2>Loading...</h2>
+        <p>Please wait while we authenticate you.</p>
+      </div>
+    );
+  }
+
+  if (auth.error) {
+    console.error("Authentication error:", auth.error);
+    return (
+      <div style={{ textAlign: "center", marginTop: "100px" }}>
+        <h2>Authentication Error</h2>
+        <p>Error: {auth.error.message}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+      </div>
+    );
+  }
 
   if (!auth.isAuthenticated) {
     return (
       <div style={{ textAlign: "center", marginTop: "100px" }}>
         <h2>Welcome to Personal Finance Tracker 💰</h2>
         <p>Sign in to view your dashboard and manage expenses.</p>
-        <button onClick={() => auth.signinRedirect()}>Sign in</button>
+        <button 
+          onClick={() => {
+            try {
+              auth.signinRedirect();
+            } catch (error) {
+              console.error("Sign-in error:", error);
+              alert("Sign-in failed. Please try again.");
+            }
+          }}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer"
+          }}
+        >
+          Sign in
+        </button>
       </div>
     );
   }
